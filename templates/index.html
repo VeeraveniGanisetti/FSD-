@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102b24">
+  <title>ECHO SCAN — Waste, sorted smarter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#scanner" aria-label="ECHO SCAN home">
+        <span class="brand-mark">e<span>↗</span></span>
+        <span class="brand-name">ECHO<span>SCAN</span></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <a class="nav-link active" href="#scanner"><span class="nav-icon">⌁</span> Scan an item</a>
+      <a class="nav-link" href="#history"><span class="nav-icon">◷</span> Scan history</a>
+      <a class="nav-link" href="#guide"><span class="nav-icon">✳</span> Sorting guide</a>
+      <div class="sidebar-bottom">
+        <div class="eco-art"><div class="eco-circle">♻</div><p>Small choices.<br><b>Lasting impact.</b></p><span>Make every item count.</span></div>
+        <div class="privacy"><span class="privacy-dot"></span><span>Private by design<br><small>Photos are analysed on this computer and never saved</small></span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand">ECHO <b>SCAN</b></div>
+        <div class="breadcrumb">Workspace <span>/</span> <b>Waste scanner</b></div>
+        <div class="top-right"><span class="live-dot"></span> <span>Ready to sort</span></div>
+      </header>
+
+      <section class="welcome">
+        <div>
+          <div class="eyebrow"><span class="spark">✦</span> WASTE SORTING, MADE SIMPLE</div>
+          <h1>Give waste a <em>second chance.</em></h1>
+          <p class="subtitle">Scan an item. Understand where it belongs. Make a little less waste.</p>
+        </div>
+        <div class="welcome-badge"><span>♻</span><div><b>One scan at a time</b><small>Build better everyday habits</small></div></div>
+      </section>
+
+      <section class="stats-grid" aria-label="Scan statistics">
+        <article class="stat-card"><div class="stat-icon mint">⌁</div><div><span>Total scans</span><strong id="stat-total">0</strong><small>Photos analysed</small></div></article>
+        <article class="stat-card"><div class="stat-icon green">♻</div><div><span>Recyclable</span><strong id="stat-recyclable">0</strong><small>Generally recyclable</small></div></article>
+        <article class="stat-card"><div class="stat-icon amber">↗</div><div><span>Other routes</span><strong id="stat-other">0</strong><small>Compost, drop-off, reuse, waste</small></div></article>
+        <article class="stat-card"><div class="stat-icon grey">?</div><div><span>Needs review</span><strong id="stat-review">0</strong><small>Model was not sure</small></div></article>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel scanner-panel" id="scanner">
+          <div class="panel-heading"><div><div class="section-kicker">01 / SCANNER</div><h2>Scan your item</h2><p>Place one item in view for a clearer result.</p></div><span class="step-chip">AI IMAGE SCAN</span></div>
+          <div class="camera-stage" id="camera-stage">
+            <video id="camera" autoplay playsinline muted hidden></video>
+            <canvas id="capture-canvas" hidden></canvas>
+            <img id="preview-image" alt="Preview of the selected waste item" hidden>
+            <div class="camera-placeholder" id="camera-placeholder">
+              <div class="scan-graphic"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span><div class="scan-object">♻</div><div class="scan-line"></div></div>
+              <b>Your next scan starts here</b><span>Use your camera or upload a photo</span>
+            </div>
+            <div class="scan-overlay" id="scan-overlay" hidden><div class="spinner" aria-hidden="true"></div><b>Analysing with the AI model…</b><span>The first scan can take a little longer.</span></div>
+            <div class="stage-tag"><span class="live-dot"></span><span id="camera-status">NO IMAGE YET</span></div>
+          </div>
+          <div class="camera-actions">
+            <button type="button" class="btn btn-secondary" id="start-camera"><span>◎</span> Start camera</button>
+            <button type="button" class="btn btn-secondary" id="capture-btn" disabled><span>⌾</span> Capture photo</button>
+            <label class="btn btn-quiet upload-btn" for="image-upload"><span>↑</span> Upload image</label>
+            <input id="image-upload" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          </div>
+          <button type="button" class="btn btn-primary full-btn" id="scan-btn" disabled><span>⌁</span> <span id="scan-btn-label">Scan with AI</span></button>
+          <div class="scan-divider"><span>IMAGE-BASED SCAN</span></div>
+          <p class="microcopy">JPG, PNG or WebP, up to 8 MB. The AI gives a first-pass suggestion, not a guarantee. Always follow your local collection rules.</p>
+        </section>
+
+        <section class="panel result-panel" id="result-panel">
+          <div class="panel-heading"><div><div class="section-kicker">02 / RESULT</div><h2>Sorting recommendation</h2><p>Clear guidance for your next step.</p></div><span class="result-status" id="result-status">AWAITING SCAN</span></div>
+          <div class="error-box" id="error-box" role="alert" hidden></div>
+          <div class="empty-result" id="empty-result"><div class="empty-orbit"><span>♻</span></div><h3>Ready when you are</h3><p>Choose or capture a photo, then press <b>Scan with AI</b>.</p><div class="empty-steps"><span><b>1</b> Photo</span><i>→</i><span><b>2</b> Scan</span><i>→</i><span><b>3</b> Sort</span></div></div>
+          <div id="result-content" hidden>
+            <div class="result-hero" id="result-hero"><div class="result-symbol" id="result-symbol">♻</div><div><span class="result-overline" id="result-overline">SORTING STATUS</span><h3 id="result-title">Recycle</h3><p id="result-item">Item detected</p></div></div>
+            <div class="confidence-row"><span>Model confidence <b id="confidence-value">—</b></span><div class="confidence-track"><div id="confidence-bar"></div></div></div>
+            <p class="prediction-summary" id="result-message" hidden></p>
+            <div class="guidance-box"><div class="guidance-icon">✦</div><div><b>What to do next</b><p id="guidance-text"></p></div></div>
+            <div class="warning-box"><div class="guidance-icon">!</div><div><b>Check local rules</b><p id="warning-text"></p></div></div>
+            <div class="detected-label"><span>CLASSIFICATION</span><b id="category-label">Plastic</b><span id="saved-note">Saved to history</span></div>
+            <p class="prediction-summary" id="alternatives" hidden></p>
+            <button type="button" class="text-button" id="reset-scan">↻ Scan another item</button>
+          </div>
+          <div class="model-note"><span class="model-dot" id="model-dot"></span><span id="model-status">Checking the AI model…</span></div>
+        </section>
+      </div>
+
+      <section class="panel history-panel" id="history">
+        <div class="panel-heading"><div><div class="section-kicker">03 / YOUR ACTIVITY</div><h2>Recent scans</h2><p>Your latest scans, saved on this computer.</p></div><button type="button" class="text-button clear-history" id="clear-history">Clear history ↗</button></div>
+        <div class="breakdown" id="breakdown" hidden><span class="breakdown-title">BY MATERIAL</span><div id="breakdown-list"></div></div>
+        <div class="history-table-wrap"><table><thead><tr><th>ITEM</th><th>CATEGORY</th><th>ROUTE</th><th>CONFIDENCE</th><th>DATE</th></tr></thead><tbody id="history-body"><tr><td colspan="5" class="table-empty">No scans yet. Your first scan will show up here.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="guide-section" id="guide"><div class="guide-intro"><div class="section-kicker">QUICK REFERENCE</div><h2>Know before you throw.</h2><p>When in doubt, keep recyclables clean and dry, and check local collection rules.</p></div>
+        <div class="guide-cards">
+          <article class="guide-card"><span class="guide-emoji">📦</span><h3>Paper & cardboard</h3><p>Keep dry and flatten boxes. Greasy or food-soiled paper may not be accepted.</p><span class="guide-tag good">OFTEN RECYCLABLE</span></article>
+          <article class="guide-card"><span class="guide-emoji">🥫</span><h3>Metal & glass</h3><p>Empty containers first. Check local rules for lids, broken glass, and deposit schemes.</p><span class="guide-tag good">OFTEN RECYCLABLE</span></article>
+          <article class="guide-card"><span class="guide-emoji">🔋</span><h3>Batteries & e-waste</h3><p>Never place batteries in regular bins. Use an authorised collection point.</p><span class="guide-tag care">SPECIAL DROP-OFF</span></article>
+          <article class="guide-card"><span class="guide-emoji">🍌</span><h3>Food & organic</h3><p>Compost where a suitable collection or home composting option exists.</p><span class="guide-tag care">COMPOST / ORGANICS</span></article>
+        </div>
+      </section>
+      <footer><span>© 2026 ECHO SCAN · FSD HACKATHON PROTOTYPE</span><span>Designed for a cleaner tomorrow <b>✳</b></span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
